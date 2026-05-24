@@ -1,9 +1,7 @@
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
-
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: '/api',
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -22,7 +20,7 @@ api.interceptors.response.use(
       const refreshToken = localStorage.getItem('refreshToken');
       if (refreshToken) {
         try {
-          const res = await axios.post(`${API_URL}/auth/refresh`, { refreshToken });
+          const res = await axios.post('/api/auth/refresh', { refreshToken });
           localStorage.setItem('accessToken', res.data.accessToken);
           localStorage.setItem('refreshToken', res.data.refreshToken);
           error.config.headers.Authorization = `Bearer ${res.data.accessToken}`;
@@ -82,18 +80,25 @@ export const sitesApi = {
 export const schedulingApi = {
   getVisits: (params?: any) => api.get('/scheduling/visits', { params }),
   getTodayVisits: () => api.get('/scheduling/visits/today'),
-  getCalendar: (year: number, month: number) => api.get('/scheduling/visits/calendar', { params: { year, month } }),
+  getCalendar: (year: number, month: number) =>
+    api.get('/scheduling/visits/calendar', { params: { year, month } }),
   getDispatch: () => api.get('/scheduling/visits/dispatch'),
   getVisit: (id: string) => api.get(`/scheduling/visits/${id}`),
   createVisit: (data: any) => api.post('/scheduling/visits', data),
   updateVisit: (id: string, data: any) => api.put(`/scheduling/visits/${id}`, data),
-  updateStatus: (id: string, status: string) => api.patch(`/scheduling/visits/${id}/status`, { status }),
+  updateStatus: (id: string, status: string) =>
+    api.patch(`/scheduling/visits/${id}/status`, { status }),
   deleteVisit: (id: string) => api.delete(`/scheduling/visits/${id}`),
-  toggleChecklistItem: (visitId: string, itemId: string) => api.patch(`/scheduling/visits/${visitId}/checklist/${itemId}`),
-  addChecklistItem: (visitId: string, data: any) => api.post(`/scheduling/visits/${visitId}/checklist`, data),
-  addFinding: (visitId: string, data: any) => api.post(`/scheduling/visits/${visitId}/findings`, data),
-  logChemical: (visitId: string, data: any) => api.post(`/scheduling/visits/${visitId}/chemicals`, data),
-  saveSignature: (visitId: string, data: any) => api.post(`/scheduling/visits/${visitId}/signature`, data),
+  toggleChecklistItem: (visitId: string, itemId: string) =>
+    api.patch(`/scheduling/visits/${visitId}/checklist/${itemId}`),
+  addChecklistItem: (visitId: string, data: any) =>
+    api.post(`/scheduling/visits/${visitId}/checklist`, data),
+  addFinding: (visitId: string, data: any) =>
+    api.post(`/scheduling/visits/${visitId}/findings`, data),
+  logChemical: (visitId: string, data: any) =>
+    api.post(`/scheduling/visits/${visitId}/chemicals`, data),
+  saveSignature: (visitId: string, data: any) =>
+    api.post(`/scheduling/visits/${visitId}/signature`, data),
   getSchedules: () => api.get('/scheduling/schedules'),
   createSchedule: (data: any) => api.post('/scheduling/schedules', data),
 };
@@ -104,9 +109,12 @@ export const teamsApi = {
   update: (id: string, data: any) => api.put(`/teams/${id}`, data),
   delete: (id: string) => api.delete(`/teams/${id}`),
   getPerformance: () => api.get('/teams/performance'),
-  addMember: (teamId: string, userId: string) => api.post(`/teams/${teamId}/members/${userId}`),
-  removeMember: (teamId: string, userId: string) => api.delete(`/teams/${teamId}/members/${userId}`),
-  setLeader: (teamId: string, userId: string) => api.put(`/teams/${teamId}/leader/${userId}`),
+  addMember: (teamId: string, userId: string) =>
+    api.post(`/teams/${teamId}/members/${userId}`),
+  removeMember: (teamId: string, userId: string) =>
+    api.delete(`/teams/${teamId}/members/${userId}`),
+  setLeader: (teamId: string, userId: string) =>
+    api.put(`/teams/${teamId}/leader/${userId}`),
 };
 
 export const usersApi = {

@@ -6,12 +6,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "prisma generate",
+    "db:push": "prisma db push",
+    "db:seed": "npx ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts",
+    "db:studio": "prisma studio"
   },
   "dependencies": {
     "next": "15.0.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "@prisma/client": "^5.14.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
     "axios": "^1.7.2",
     "zustand": "^4.5.2",
     "date-fns": "^3.6.0",
@@ -20,12 +27,16 @@
     "tailwind-merge": "^2.3.0"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.19",
     "postcss": "^8",
+    "prisma": "^5.14.0",
     "tailwindcss": "^3.4.4",
+    "ts-node": "^10.9.1",
     "typescript": "^5"
   }
 }
