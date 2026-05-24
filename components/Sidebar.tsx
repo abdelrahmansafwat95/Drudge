@@ -1,10 +1,11 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard, Users, Building2, MapPin, Calendar,
-  Beaker, FileText, Settings, LogOut, ShieldCheck
+  Beaker, FileText, Settings, LogOut,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
@@ -33,16 +34,8 @@ export default function Sidebar() {
 
   return (
     <aside className="w-64 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col h-screen sticky top-0">
-      <div className="p-5 border-b border-gray-200">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-primary-600 rounded-lg flex items-center justify-center">
-            <ShieldCheck className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <p className="font-bold text-gray-900 text-sm leading-tight">PestControl</p>
-            <p className="text-xs text-gray-400">Pro CRM</p>
-          </div>
-        </div>
+      <div className="p-4 border-b border-gray-200">
+        <Image src="/logo.svg" alt="Drudge" width={140} height={63} priority />
       </div>
 
       <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
