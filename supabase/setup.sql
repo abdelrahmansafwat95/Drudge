@@ -131,6 +131,19 @@ alter table findings enable row level security;
 alter table chemicals enable row level security;
 alter table chemical_logs enable row level security;
 
+-- Drop existing policies if they exist (safe to re-run)
+drop policy if exists "auth_all" on profiles;
+drop policy if exists "auth_all" on clients;
+drop policy if exists "auth_all" on sites;
+drop policy if exists "auth_all" on zones;
+drop policy if exists "auth_all" on teams;
+drop policy if exists "auth_all" on team_members;
+drop policy if exists "auth_all" on visits;
+drop policy if exists "auth_all" on checklist_items;
+drop policy if exists "auth_all" on findings;
+drop policy if exists "auth_all" on chemicals;
+drop policy if exists "auth_all" on chemical_logs;
+
 -- Allow all authenticated users full access (role checks done in app)
 create policy "auth_all" on profiles      for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
 create policy "auth_all" on clients       for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
