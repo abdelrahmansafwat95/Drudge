@@ -1,4 +1,8 @@
-# Deployment Guide — Railway (API) + Vercel (Web)
+# Deployment Guide — Vercel Only (No Railway Needed)
+
+The entire app (API + frontend) runs on Next.js and deploys to **Vercel only**.
+
+---
 
 ## Step 1 — Get your Supabase connection strings
 
@@ -6,89 +10,51 @@
 2. Scroll to **"Connection string"** section
 3. Copy two URLs:
 
-| Variable | Dropdown | Port |
+| Variable | Tab | Port |
 |---|---|---|
-| `DATABASE_URL` | **Transaction** | 6543 |
-| `DIRECT_URL` | **Session** | 5432 |
+| `DATABASE_URL` | **Transaction** pooler | 6543 |
+| `DIRECT_URL` | **Session** pooler | 5432 |
 
 > The Transaction URL ends with `?pgbouncer=true` — keep that.
 
-Your URLs will look like:
+Your URLs look like:
 ```
 DATABASE_URL = postgresql://postgres.qliqgoqiejeoppfbegek:DeltaCharlie689er%4044@aws-0-REGION.pooler.supabase.com:6543/postgres?pgbouncer=true
-DIRECT_URL   = postgresql://postgres.qliqgoqiejeoppfbegek:DeltaCharlie689er%4044@aws-0-REGION.pooler.supabase.com:5432/postgres
+DIRECT_URL   = postgresql://postgres:DeltaCharlie689er%4044@db.qliqgoqiejeoppfbegek.supabase.co:5432/postgres
 ```
-*(Replace `REGION` with the actual region shown, e.g. `eu-central-1`)*
+*(Replace `REGION` with what Supabase shows, e.g. `us-east-1`)*
 
 ---
 
-## Step 2 — Deploy API to Railway
+## Step 2 — Deploy to Vercel
 
-### 2.1 Create Railway project
-1. Go to https://railway.app → **New Project** → **Deploy from GitHub repo**
-2. Select `abdelrahmansafwat95/Drudge`
-3. Click the service that appears → **Settings**
-4. Set **Root Directory** → `apps/api`
-5. Railway will use `railway.json` automatically (start command is already configured)
-
-### 2.2 Add Railway environment variables
-
-Click **Variables** tab and add all of these:
-
-```
-DATABASE_URL    = [paste Transaction URL from Supabase]
-DIRECT_URL      = [paste Session URL from Supabase]
-JWT_SECRET      = 7f3e8b2a1d9c6f4e0a5b3c7d2e8f1a4b6c9d3e7f2a5b8c1d4e7f0a3b6c9d2e5
-JWT_REFRESH_SECRET = 9a2c5f8b1d4e7a0c3f6b9d2e5a8c1f4b7d0e3a6c9f2b5d8e1a4c7f0b3d6e9a2
-JWT_EXPIRES_IN  = 15m
-JWT_REFRESH_EXPIRES_IN = 7d
-NODE_ENV        = production
-```
-
-> Railway auto-assigns `PORT`. Our API reads `process.env.PORT` automatically.
-
-### 2.3 Deploy
-Click **Deploy**. After it finishes, copy the public URL — you'll need it for Vercel.
-
-Example: `https://drudge-api-production.up.railway.app`
-
-Test it: `https://YOUR-RAILWAY-URL/api/v1/dashboard/kpis` → should return 401 (JWT working)
-
----
-
-## Step 3 — Deploy Web to Vercel
-
-### 3.1 Create Vercel project
+### 2.1 Create Vercel project
 1. Go to https://vercel.com → **New Project** → Import `abdelrahmansafwat95/Drudge`
 2. Under **Root Directory** → type `apps/web`
-3. Framework will auto-detect as **Next.js**
+3. Framework auto-detects as **Next.js**
 
-### 3.2 Add Vercel environment variables
+### 2.2 Add environment variables
+
+In Vercel → Project → **Settings → Environment Variables**, add:
 
 ```
-NEXT_PUBLIC_API_URL  = https://YOUR-RAILWAY-URL/api/v1
-NEXT_PUBLIC_APP_URL  = https://YOUR-PROJECT.vercel.app
-NODE_ENV             = production
+DATABASE_URL        = [paste Transaction URL from step 1]
+DIRECT_URL          = [paste Session URL from step 1]
+JWT_SECRET          = 7f3e8b2a1d9c6f4e0a5b3c7d2e8f1a4b6c9d3e7f2a5b8c1d4e7f0a3b6c9d2e5
+JWT_REFRESH_SECRET  = 9a2c5f8b1d4e7a0c3f6b9d2e5a8c1f4b7d0e3a6c9f2b5d8e1a4c7f0b3d6e9a2
+JWT_EXPIRES_IN      = 15m
+JWT_REFRESH_EXPIRES_IN = 7d
+NODE_ENV            = production
 ```
 
-> Replace `YOUR-RAILWAY-URL` with the URL from Step 2.3
-
-### 3.3 Deploy
+### 2.3 Deploy
 Click **Deploy**. Your app will be live at `https://your-project.vercel.app`
 
----
-
-## Step 4 — Update CORS after Vercel deploy
-
-Once you know your Vercel URL, add it to Railway variables:
-```
-NEXT_PUBLIC_APP_URL = https://your-actual-project.vercel.app
-```
-The API CORS already allows all `*.vercel.app` domains, so this is optional but good practice.
+That's it — no Railway needed.
 
 ---
 
-## Login Credentials (already in DB)
+## Login Credentials (already in DB from SQL setup)
 
 | Role | Email | Password |
 |------|-------|----------|
@@ -102,12 +68,12 @@ The API CORS already allows all `*.vercel.app` domains, so this is optional but 
 
 ## Troubleshooting
 
-**Railway build fails** → Check that Root Directory is set to `apps/api`
+**Build fails with "prisma generate" error** → Make sure `DATABASE_URL` is set in Vercel env vars
 
-**401 on all API calls** → JWT secrets must match between Railway env and what was used to sign tokens
+**401 on all API calls** → JWT secrets must be set in Vercel env vars
 
-**CORS error in browser** → Your Vercel URL must end in `.vercel.app` OR be set in `NEXT_PUBLIC_APP_URL` on Railway
+**Supabase free tier paused** → Go to dashboard → Resume project → Wait ~30 seconds
 
-**Supabase free tier paused** → Go to dashboard → Resume project
+**"Can't reach database server"** → Copy the exact URLs from Supabase dashboard; ensure `%40` encodes the `@` in the password
 
-**`prisma db push` fails on Railway** → Double-check `DATABASE_URL` and `DIRECT_URL` are correctly set with the password `@` encoded as `%40`
+**Wrong region** → In `DATABASE_URL`, replace `REGION` with the actual region from Supabase (e.g. `us-east-1`, `eu-central-1`)
