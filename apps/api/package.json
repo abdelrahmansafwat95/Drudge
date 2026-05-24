@@ -6,7 +6,6 @@
     "dev": "nest start --watch",
     "build": "nest build",
     "start": "node dist/main",
-    "db:migrate": "npx prisma migrate deploy",
     "db:push": "npx prisma db push",
     "db:seed": "npx ts-node prisma/seed.ts",
     "db:studio": "npx prisma studio"

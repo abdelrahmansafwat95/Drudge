@@ -16,20 +16,18 @@ async function bootstrap() {
     }),
   );
 
-  const allowedOrigins = [
-    process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
-    /\.vercel\.app$/,
-  ];
-
   app.enableCors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-      const allowed = allowedOrigins.some((o) =>
-        typeof o === 'string' ? o === origin : o.test(origin),
-      );
-      callback(null, allowed || process.env.NODE_ENV === 'development');
+      const allowed =
+        origin.endsWith('.vercel.app') ||
+        origin.includes('localhost') ||
+        origin === process.env.NEXT_PUBLIC_APP_URL;
+      callback(null, allowed);
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   const config = new DocumentBuilder()
@@ -42,12 +40,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  const port = process.env.API_PORT || 3001;
+  const port = process.env.PORT || process.env.API_PORT || 3001;
   await app.listen(port, '0.0.0.0');
 
-  console.log(`🚀 API: http://localhost:${port}/api/v1`);
-  console.log(`📚 Docs: http://localhost:${port}/api/docs`);
-  console.log(`✅ DB connected`);
+  console.log(`\u{1F680} API running on port ${port}`);
+  console.log(`\u{1F4DA} Docs: /api/docs`);
+  console.log(`\u{2705} Ready`);
 }
 
 bootstrap();
